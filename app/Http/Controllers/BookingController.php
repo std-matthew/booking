@@ -44,7 +44,7 @@ class BookingController extends Controller
         $date = Carbon::parse($request->input('booking_date'))->format('Y-m');
 
         $reports = BookingReport::select('booking_date')
-                    ->where('booking_date', 'like' , '%' . $date . '%')
+                    ->where('booking_date', 'like', . $date . '%')
                     ->groupBy('booking_date')
                     ->get();
 
