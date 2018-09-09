@@ -41,10 +41,12 @@ class BookingController extends Controller
     	$events = [];
         $locationid = $request->location_id;
 
-        $date = $request->input('booking_date');
+        $year = Carbon::parse($request->input('booking_date'))->format('Y');
+        $month = Carbon::parse($request->input('booking_date'))->format('m');
 
         $reports = BookingReport::select('booking_date')
-                    ->where('booking_date', 'like', $date[0] . '-' . $date[1] . '%')
+                    ->whereYear('booking_date', $year)
+                    ->whereMonth('booking_date', $month)
                     ->groupBy('booking_date')
                     ->get();
 
