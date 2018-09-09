@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\BookingLocation;
 use App\BookingReport;
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -40,8 +41,10 @@ class BookingController extends Controller
     	$events = [];
         $locationid = $request->location_id;
 
+        $date = Carbon::parse($request->input('booking_date'))->format('Y-m');
+
         $reports = BookingReport::select('booking_date')
-                    ->where('booking_date', 'like' , '%' . date('Y-m', strtotime($request->input('booking_date')))  . '%')
+                    ->where('booking_date', 'like' , '%' . $date . '%')
                     ->groupBy('booking_date')
                     ->get();
 
