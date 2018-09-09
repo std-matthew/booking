@@ -41,20 +41,21 @@ class BookingController extends Controller
     	$events = [];
         $locationid = $request->location_id;
 
-        $date = Carbon::parse($request->input('booking_date'))->format('Y-m');
+        $date = $request->input('booking_date');
 
         $reports = BookingReport::select('booking_date')
-                    ->where('booking_date', 'like', $date . '%')
+                    ->where('booking_date', 'like', $date[0] . '-' . $date[1] . '%')
                     ->groupBy('booking_date')
                     ->get();
 
 
         foreach($reports as $report){
             if(BookingReport::isUnavailable($report->booking_date, $request->input('booking_location_id'))){
+                $startDate = Carbon::parse($report->booking_date)->format('Y-m-d');
                 array_push($events, array(
                     'title' => 'Unavailable',
                     'allDay' => true,
-                    'start' => date('Y-m-d', strtotime($report->booking_date)),
+                    'start' => $startDate,
                     'color' => '#666',
                     'textColor' => '#fff',
                     'backgroundColor' => '#e3342f',
