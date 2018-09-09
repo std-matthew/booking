@@ -6,13 +6,15 @@ Vue.mixin({
     data()
     {
         return {
-            loading: false,
+
         };
     },
 
     computed:
     {
-
+        loading() {
+            return this.$store.state.settings.loading;
+        },
     },
 
     mounted()
@@ -60,5 +62,9 @@ Vue.mixin({
                 quantity: this.$store.state.booking.quantity,
             };
         },
+
+        setLoading(boolean) {
+            this.$store.commit('settings/setLoading', boolean);
+        }
     }
 });

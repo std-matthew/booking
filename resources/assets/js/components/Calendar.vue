@@ -9,6 +9,7 @@
 				</div>
 			</div>
 		</div>
+
 	</div>
 </template>
 
@@ -55,11 +56,14 @@ export default {
 	mounted() {
 		this.setup();
 
-		ebi.$on('onFetchEvents', () => {
-			this.events = this.$store.state.booking.events;
+		ebi.$on('fetchEvents', () => {
+			this.fetchEvents();
+			this.setLoading(true);
+
 			setTimeout(() => {
 				this.init();
-			}, 500);
+				this.setLoading(false);
+			}, 1000);
 		});
 	},
 
@@ -71,19 +75,47 @@ export default {
 			if (!this.date) {
 				this.date = moment().format('YYYY-MM-DD');
 				this.$store.commit('booking/setDate', this.date);
+				this.$store.commit('booking/setCalendarDate', this.date);
 			}
 		},
 
 
 		init() {
-			this.calendar.fullCalendar(this.settings());
+			setTimeout(() => {
+				this.calendar.fullCalendar(this.settings());
+				this.calendar.fullCalendar('gotoDate', this.$store.state.booking.calendar_date);
+			}, 500);
 		},
 
 		/**
 		 * @Methods
 		 */
+		fetchEvents() {
+
+			this.setLoading(true);
+
+			axios.post(route('fetch.events'), {
+				calendar_date: this.$store.state.booking.calendar_date,
+				booking_location_id: this.$store.state.booking.location.id,
+			})
+			.then(response => {
+				const data = response.data;
+
+				this.$store.commit('booking/setEvents', data.events);
+				this.events = data.events;
+				this.calendar.fullCalendar('destroy');
+				this.setLoading(false);
+
+			}).catch(error => {
+				this.setLoading(false);
+			});
+		},
+
 		check(date, dateDom) {
 
+			if (this.loading) return;
+
+			this.setLoading(true);
 			const bookingDate = date.format();
 
 			axios.post(route('book.checkdate'), {
@@ -105,9 +137,11 @@ export default {
 					$('.fc-day').removeClass('fc-today');
 	                dateDom.addClass('fc-today');
 				}
+
+				this.setLoading(false);
                 
 			}).catch(error => {
-
+				this.setLoading(false);
 			});
 		},
 
@@ -139,7 +173,7 @@ export default {
 						text: 'Prev',
 						click() {
 							$this.calendar.fullCalendar('prev');
-							console.log($this.calendar.fullCalendar('getDate'));
+							$this.changeMonth();
 						}
 					},
 
@@ -147,7 +181,7 @@ export default {
 						text: 'Next',
 						click() {
 							$this.calendar.fullCalendar('next');
-							console.log($this.calendar.fullCalendar('getDate'));
+							$this.changeMonth();
 						}
 					},
 				},
@@ -156,6 +190,13 @@ export default {
     				$this.check(date, $(this));
     			},
 			}
+		},
+
+		changeMonth() {
+			const date = this.calendar.fullCalendar('getDate').format('YYYY-MM-DD');
+			this.$store.commit('booking/setCalendarDate', date);
+
+			ebi.$emit('fetchEvents');
 		},
 	},
 

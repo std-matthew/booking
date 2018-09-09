@@ -93,15 +93,17 @@ export default {
 		},
 
 		fetch() {
+			this.setLoading(true);
+
 			axios.post(route('fetch.invoice'))
 			.then(response => {
 				const data = response.data;
 
 				this.invoice = data.invoice;
 				this.items = data.items;
-
+				this.setLoading(false);
 			}).catch(error => {
-
+				this.setLoading(false);
 			});
 		},
 
@@ -116,7 +118,10 @@ export default {
 		},
 
 		submit() {
+			if (this.loading) return;
+			
 			const data = this.form.serialize();
+			this.setLoading(true);
 
 			axios.post(route('invoice.store'), data)
 			.then(response => {
@@ -129,8 +134,11 @@ export default {
                     redirectUrl: data.redirectUrl,
                 });
 
+                this.setLoading(false);
+
 			}).catch(error => {
 				this.showErrors(error);
+				this.setLoading(false);
 			});
 		},
 	},

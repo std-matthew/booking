@@ -82,12 +82,15 @@ export default {
 
 		fetch() {
 			
+			this.setLoading(true);
+
 			axios.post(route('fetch.categories'), this.postData())
 			.then(response => {
 				this.lists = response.data.lists;
 				this.setup();
+				this.setLoading(false);
 			}).catch(error => {
-
+				this.setLoading(false);
 			});
 
 		},

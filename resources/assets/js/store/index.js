@@ -6,8 +6,23 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     modules: {
 
+        settings: {
+            namespaced: true,
+            
+            state: {
+                loading: false,
+            },
+
+            mutations: {
+                setLoading(state, value) {
+                    state.loading = value;
+                },
+            },
+        },
+
         booking: {
             namespaced: true,
+            
             state: {
                 date: null,
                 location: {},
@@ -15,6 +30,7 @@ export default new Vuex.Store({
                 time: {},
                 quantity: 1,
                 events: [],
+                calendar_date: null,
             },
 
             mutations: {
@@ -41,6 +57,9 @@ export default new Vuex.Store({
                 setQuantity(state, value) {
                     state.quantity = value;
                 },
+                setCalendarDate(state, value) {
+                    state.calendar_date = value;
+                }
             }
         },
     }

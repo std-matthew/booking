@@ -51,18 +51,20 @@ export default {
 
 		select() {
 			this.$store.commit('booking/setLocation', this.locations.filter(obj => {return obj.id === this.locationId})[0]);
-
 			ebi.$emit('fetchEvents');
 		},
 
 		fetch() {
+
+			this.setLoading(true);
+			
 			axios.post(route('fetch.locations'))
 			.then(response => {
 				this.locations = response.data.lists;
 				this.setup();
-				ebi.$emit('fetchEvents');
+				this.setLoading(false);
 			}).catch(error => {
-
+				this.setLoading(false);
 			});
 		},
 	}

@@ -3,27 +3,27 @@
 		<div class="row">
 			<div class="col-sm-12 text-center p-3">
 				
-				<button @click="stepBtn(1, true)" :class="step === 1 ? 'btn-primary' : ''"
+				<button @click="stepBtn(1, true)" :class="step > 0 ? 'btn-primary' : ''"
 					type="button" class="btn btn-sm px-3 mx-2">
 					<i class="fa fa-calendar"></i> Date
 				</button>
 			
-				<button @click="stepBtn(2, true)" :class="step === 2 ? 'btn-primary' : ''"
+				<button @click="stepBtn(2, true)" :class="step > 1 ? 'btn-primary' : ''"
 					type="button" class="btn btn-sm px-3 mx-2">
 					<i class="fa fa-cubes"></i> Type
 				</button>
 			
-				<button @click="stepBtn(3, true)" :class="step === 3 ? 'btn-primary' : ''"
+				<button @click="stepBtn(3, true)" :class="step > 2 ? 'btn-primary' : ''"
 					type="button" class="btn btn-sm px-3 mx-2">
 					<i class="fa fa-clock-o"></i> Time
 				</button>
 			
-				<button @click="stepBtn(4, true)" :class="step === 4 ? 'btn-primary' : ''"
+				<button @click="stepBtn(4, true)" :class="step > 3 ? 'btn-primary' : ''"
 					type="button" class="btn btn-sm px-3 mx-2">
 					<i class="fa fa-file-text"></i> Details
 				</button>
 			
-				<button @click="stepBtn(5, true)" :class="step === 5 ? 'btn-primary' : ''"
+				<button @click="stepBtn(5, true)" :class="step > 4 ? 'btn-primary' : ''"
 					type="button" class="btn btn-sm px-3 mx-2">
 					<i class="fa fa-credit-card-alt"></i> Checkout
 				</button>
@@ -31,7 +31,8 @@
 			</div>
 		</div>
 		
-		<div>
+		<div class="position-relative">
+
 			<div v-show="step === 1">
 				<location></location>
 
@@ -59,7 +60,12 @@
 				<bookingcheckout ref="bookingcheckout"
 				:id="'bookingcheckout'"></bookingcheckout>
 			</div>
+
+			<loader></loader>
+
 		</div>
+
+
 
 		<div class="row">
 
@@ -79,6 +85,7 @@
 			</div>
 		</div>
 
+
 		<modal ref="modal"
 		:id="'modal'">
 		</modal>
@@ -89,6 +96,7 @@
 <script type="text/javascript">
 
 import { ebi } from '../EventBus.js';
+import loader from './Loader';
 import location from './BookingLocation';
 import calendar from './Calendar';
 import bookingtype from './BookingType';
@@ -110,6 +118,7 @@ export default {
 	},
 
 	components: {
+		loader,
 		location,
 		calendar,
 		bookingtype,
@@ -122,10 +131,6 @@ export default {
 	mounted() {
 		this.setup();
 		this.init();
-
-		ebi.$on('fetchEvents', () => {
-			this.fetchEvents();
-		});
 	},
 
 	methods: {
@@ -209,20 +214,6 @@ export default {
 
 			return step;
 
-		},
-
-		fetchEvents() {
-
-			axios.post(route('fetch.events'), this.postData())
-			.then(response => {
-				const data = response.data;
-
-				this.$store.commit('booking/setEvents', data.events);
-
-				ebi.$emit('onFetchEvents');
-			}).catch(error => {
-
-			});
 		},
 	},
 

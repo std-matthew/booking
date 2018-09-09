@@ -4,9 +4,7 @@
 
 <div class="container">
 
-	<booking
-		:fetchlocationurl="'{{ route('fetch.locations') }}'"
-	></booking>
+	<booking></booking>
 		
 </div>
 

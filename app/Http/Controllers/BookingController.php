@@ -41,8 +41,8 @@ class BookingController extends Controller
     	$events = [];
         $locationid = $request->location_id;
 
-        $year = Carbon::parse($request->input('booking_date'))->format('Y');
-        $month = Carbon::parse($request->input('booking_date'))->format('m');
+        $year = Carbon::parse($request->input('calendar_date'))->format('Y');
+        $month = Carbon::parse($request->input('calendar_date'))->format('m');
 
         $reports = BookingReport::select('booking_date')
                     ->whereYear('booking_date', $year)
